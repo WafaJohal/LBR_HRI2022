@@ -61,8 +61,12 @@ with wordcloud_container:
     # stop words list
     
     stop = nltk.corpus.stopwords.words('english')
-    stop.extend(["paper","robot","robots","study","social","human","interaction",
-    "results","participants","people","using","human-robot","robots.","used","data","present","approach","could","based","two","one"])
+    list_of_stop_words = ["paper","robot","robots","study","social","human","interaction",
+    "results","participants","people","using","human-robot","robots.","used","data","present","approach","could","based","two","one"]
+
+    list_of_stop_words = st.multiselect("List of words not included in the wordcloud", list_of_stop_words, list_of_stop_words)
+
+    stop.extend(list_of_stop_words)
    
 
     # Create and generate a word cloud imagestr.lower().str.strip():
@@ -77,13 +81,15 @@ with wordcloud_container:
 
     wc = st_wordcloud.visualize(words=wdic,tooltip_data_fields={'text': 'text','value': 'value','title':'title'} , max_words=100)
     
-    
-    st.write(wc)
+    #st.write(wc)
     #st.write(wc["clicked"])
-
+   
+    
 
 
 with map_container:
+
+    st.header("Per country distribution of papers")
     df_country_count = df.groupby(['Affiliation Country']).count()['Paper No']
     
     #df_country_count['Affiliation Country'] = df_country_count.index
@@ -96,13 +102,13 @@ with map_container:
 
     df_country_count['iso_a3'] = [countries.get(country, 'Unknown code') for country in df_country_count['Affiliation Country']]
 
-    st.write(df_country_count)
+    #st.write(df_country_count)
     df_country_count.loc[df_country_count['Affiliation Country']== 'Republic of Korea','iso_a3'] = 'KOR'
     df_country_count.loc[df_country_count['Affiliation Country']== 'USA','iso_a3'] = 'USA'
     df_country_count.loc[df_country_count['Affiliation Country']== 'Taiwan Roc','iso_a3'] = 'TWN'
     df_country_count.loc[df_country_count['Affiliation Country']== 'Czech Rep','iso_a3'] = 'CZE'
 
-    st.write(df_country_count)
+    #st.write(df_country_count)
 
     bars = alt.Chart(df_country_count).mark_bar().encode(
             x='Affiliation Country:O',
@@ -126,7 +132,7 @@ with map_container:
     #st.write(world_join)
 
     #c = alt.Chart(world_join).mark_geoshape().encode(color = alt.Color(field = "Paper No",type = "quantitative"))
-    st.altair_chart(c)
+    st.altair_chart(c, use_container_width=True)
 
 
 with dataset_container:
